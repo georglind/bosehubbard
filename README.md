@@ -4,7 +4,7 @@ This is a lite python library to generate the basis and many-body Hamiltonian fo
 
 The Bose-Hubbard model on some lattice is described by the Hamiltonian,
 
-![The Bose-Hubbard Hamiltonian](https://github.com/georglind/bosehubbard/figs/bosehubbard.png "The Bose Hubbard Hamiltonian")
+![The Bose-Hubbard Hamiltonian](https://raw.githubusercontent.com/georglind/bosehubbard/master/figs/bosehubbard.png "The Bose Hubbard Hamiltonian")
 
 Here the sum runs over the lattice indices, and as is normal the operator `b(i)` annihilates a particle on site `i`. 
 
