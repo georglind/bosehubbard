@@ -2,7 +2,13 @@
 
 This is a lite python library to generate the basis and many-body Hamiltonian for the Bose-Hubbard model.
 
-Requires `numpy` and `scipy.sparse` installed on your system.
+The Bose-Hubbard model on some lattice is described by the Hamiltonian,
+
+![The Bose-Hubbard Hamiltonian](https://github.com/georglind/bosehubbard/figs/bosehubbard.png "The Bose Hubbard Hamiltonian")
+
+Here the sum runs over the lattice indices, and as is normal the operator `b(i)` annihilates a particle on site `i`. 
+
+This library requires `numpy` and `scipy` installed on your system.
 
 ## How to use it?
 
@@ -77,7 +83,7 @@ print(basis.vs)
 #   [1 0 0 0 0 0 1 0]
 #   [1 0 0 0 0 0 0 1]
 #   [0 2 0 0 0 0 0 0]
-           ...
+#          ...
 #   [0 0 0 0 0 0 1 1]
 #   [0 0 0 0 0 0 0 2]]
 ```
