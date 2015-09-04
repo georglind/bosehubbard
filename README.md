@@ -10,7 +10,7 @@ As an example consider a ring with 8 sites.
 
 Construct the model from a list of onsite-energies `omegas`, a list of links and hopping strengths, and the interaction energy `U`.
 
-```
+```python
 import bosehubbard
 
 # The model parameters
@@ -36,7 +36,7 @@ print(m.hopping)
 
 Because the Bose-Hubbard Hamiltonian commutes with the total number operator, we can investigate each particle number sector separately,
 
-```
+```python
 # Investigate the model with two bosons in it.
 m2 = m.numbersector(2)
 
@@ -64,7 +64,7 @@ print(H)
 
 One can access the many-body basis in the two boson sector by looking at the `Basis` object,
 
-```
+```python
 basis = m2.basis
 print(basis.vs)
 
