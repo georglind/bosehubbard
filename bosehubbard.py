@@ -48,35 +48,42 @@ class Model:
 
         return H0 + H0.T
 
-    def chargestate(self, nb):
+    def numbersector(self, nb):
         """
-        Returns a specific charge state object based on this model.
+        Returns a specific particle number sector object based on this model.
         """
-        return ChargeState(self.n, nb, model=self)
+        return NumberSector(self.n, nb, model=self)
 
 
-class ChargeState:
+class NumberSector:
     """
-    Defines a specific charge state of a given Bose-Hubbard model.
+    Defines a specific particle number sector of a given Bose-Hubbard model.
     """
     def __init__(self, N, nb, model=None):
         self.N = N
         self.nb = nb
-        self.basis = ChargeStateBasis(N, nb)
+        self.basis = Basis(N, nb)
         if model is not None:
             self.model = model
 
+    @property
     def hamiltonian(self):
+        if not hasattr(self, '_hamiltonian') or self._hamiltonian == False:
+            self._hamiltonian = NumberSector.generate_hamiltonian(self.model, self.basis)
+
+        return self._hamiltonian
+
+    @staticmethod
+    def generate_hamiltonian(m, basis):
         """
         Generates the (sparse) Hamiltonian
         """
-        m = self.model
-        nbas = self.basis.len
+        nbas = basis.len
 
         HDi = np.arange(nbas)
-        HD = self.onsite_hamiltonian(m.omegas, self.basis.vs) \
-            + self.interaction_hamiltonian(m.U, self.basis.vs)
-        Hki, Hkj, Hkv = self.hopping_hamiltonian(self.basis, m.hopping, self.basis.vs)
+        HD = NumberSector.onsite_hamiltonian(m.omegas, basis.vs) \
+            + NumberSector.interaction_hamiltonian(m.U, basis.vs)
+        Hki, Hkj, Hkv = NumberSector.hopping_hamiltonian(basis, m.hopping, basis.vs)
 
         return sparse.coo_matrix((Hkv, (Hki, Hkj)), shape=(nbas, nbas)).tocsr() \
             + sparse.coo_matrix((HD, (HDi, HDi)), shape=(nbas, nbas)).tocsr()
@@ -124,7 +131,7 @@ class ChargeState:
         return np.sum(U/2*states**2, axis=1)
 
 
-class ChargeStateBasis:
+class Basis:
     """
     Many-body basis of specific <nb> charge state on a lattice with <N> sites.
     """
@@ -140,10 +147,10 @@ class ChargeStateBasis:
         self.N = N  # number of sites
         self.nb = nb  # number of bosons
 
-        self.len = ChargeStateBasis.size(N, nb)
-        self.vs = ChargeStateBasis.generate(N, nb)
-        self.hashes = ChargeStateBasis.hash(self.vs)
-        self.sorter = ChargeStateBasis.argsort(self.hashes)
+        self.len = Basis.size(N, nb)
+        self.vs = Basis.generate(N, nb)
+        self.hashes = Basis.hash(self.vs)
+        self.sorter = Basis.argsort(self.hashes)
 
     def index(self, state):
         """
@@ -154,12 +161,12 @@ class ChargeStateBasis:
         state : ndarray
             One or more states.
         """
-        return ChargeStateBasis.stateindex(state, self.hashes, self.sorter)
+        return Basis.stateindex(state, self.hashes, self.sorter)
 
     @staticmethod
     def size(N, nb):
         """
-        Return the size of the boson many-body basis. 
+        Return the size of the boson many-body basis.
 
         Parameters
         ----------
@@ -175,7 +182,7 @@ class ChargeStateBasis:
         """
         Converts state to hash and searches for the hash among hashes,
         which are sorted by the sorter list.
-        
+
         Parameters
         ----------
         state : ndarray
@@ -184,9 +191,9 @@ class ChargeStateBasis:
             List of hashes so search among
         sorter : ndarray
             Sorting indicies which sorts hashes
-            (generated from ChargeStateBasis.argsort).
+            (generated from Basis.argsort).
         """
-        key = ChargeStateBasis.hash(state)
+        key = Basis.hash(state)
         return sorter[np.searchsorted(hashes, key, sorter=sorter)]
 
     @staticmethod
@@ -202,7 +209,7 @@ class ChargeStateBasis:
         nb : int
             Number of bosons
         """
-        states = np.zeros((ChargeStateBasis.size(N, nb), N), dtype=int)
+        states = np.zeros((Basis.size(N, nb), N), dtype=int)
 
         states[0, 0] = nb
         ni = 0  # init
